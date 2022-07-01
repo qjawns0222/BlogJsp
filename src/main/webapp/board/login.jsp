@@ -4,7 +4,7 @@
     if(session.getAttribute("id")!=null){%>
     <script type="text/javascript">
     alert("로그인 되어있습니다.");
-    window.location="myPage.jsp"
+    window.location="list.jsp"
     </script>
     <%	
     }
@@ -25,7 +25,8 @@
 </div>
 <input value="로그인" type="submit"/>
 <input value="초기화" type="reset"/>
-<input type="button" value="회원가입" onclick="window.location='creUser.jsp'"/>
+<input type="button" value="회원가입" onclick="window.location='../login/creUser.jsp'"/>
+<input type="button"  onclick="window.location='../login/login.jsp'" value="마이페이지"/>
 </form>
 </body>
 </html>

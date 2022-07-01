@@ -7,19 +7,21 @@
     </jsp:useBean>
     <% 
     loginDAO dao=loginDAO.getinstance();
-    int check=dao.creuser(info);
+    int check=dao.login(info);
     
-   if(check==2){
+   if(check==1){
     %>
     <script type="text/javascript">
-    alert("아이디 중복 실패");
+    alert("비밀번호를 확인해주세요");
     history.go(-1);
     </script>
     <%}else if(check==0){ %>
-     <script type="text/javascript">
-    alert("회원가입 오류");
+   <script type="text/javascript">
+    alert("아이디와 비밀번호를 확인해주세요");
     history.go(-1);
     </script>
-      <%}else{ %>
-    <meta http-equiv="Refresh" content="0;url=login.jsp"/>
+     <%}else{ 
+     session.setAttribute("id", info.getId());
+     %>
+    <meta http-equiv="Refresh" content="0;url=list.jsp"/>
      <%} %>

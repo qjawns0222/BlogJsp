@@ -8,75 +8,216 @@ import java.sql.SQLException;
 import web.unstop.util.connutil;
 
 public class loginDAO {
-	private static loginDAO instance=null;
-	private loginDAO() {}
+	private static loginDAO instance = null;
+
+	private loginDAO() {
+	}
+
 	public static loginDAO getinstance() {
-		if(instance==null) {
-			synchronized(loginDAO.class) {
-			instance=new loginDAO();
+		if (instance == null) {
+			synchronized (loginDAO.class) {
+				instance = new loginDAO();
 			}
 		}
 		return instance;
 	}
+
 	public int login(loginVO info) {
-		Connection conn=null;
-		PreparedStatement pstmt=null;
-		ResultSet rs=null;
-		int result=-1;
+
+		ResultSet rs = null;
+		int result = -1;
 		try {
-			conn=connutil.getConnection();
-			String sql="select pass from bloglogin where id=?";
-			pstmt=conn.prepareStatement(sql);
-			pstmt.setString(1, info.getId());
-			rs=pstmt.executeQuery();
-			if(rs.next()) {
-				if(rs.getString("pass").equals(info.getPass())) {
-					result=2;
-				}else {
-					result=1;
+			loginVO che= selectpass(info.getId());
+			if (che!=null) {
+				if (che.getPass().equals(info.getPass())) {
+					//로그인성공
+					result = 2;
+				} else {
+					//비밀번호 틀림
+					result = 1;
 				}
-			}else {
-				result=0;
+			} else {
+				//아이디가 없음
+				result = 0;
 			}
-		}catch(SQLException e) {
-			e.printStackTrace();
-		}finally {
-			if(rs!=null)try {rs.close();}catch(SQLException e) {}
-			if(pstmt!=null)try {pstmt.close();}catch(SQLException e) {}
-			if(conn!=null)try {conn.close();}catch(SQLException e) {}
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException e) {
+				}
 		}
 		return result;
-		
+
 	}
-	
+
 	public int creuser(loginVO info) {
-		Connection conn=null;
-		PreparedStatement pstmt=null;
-		ResultSet rs=null;
-		int result=0;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		int result = 0;
 		try {
-			conn=connutil.getConnection();
-			String sql="insert into bloglogin values(?,?)";
-			int check=login(info);
-			if(check!=2) {
-				pstmt=conn.prepareStatement(sql);
+			conn = connutil.getConnection();
+			String sql = "insert into bloglogin values(?,?)";
+			int check = login(info);
+			if (check == 0) {
+				//생성성공
+				pstmt = conn.prepareStatement(sql);
 				pstmt.setString(1, info.getId());
 				pstmt.setString(2, info.getPass());
 				pstmt.executeUpdate();
-				result=1;
-			}else{
-				result=2;
+				result = 1;
+			} else {
+				//아이디 중복
+				result = 2;
 			}
-			
-		}catch(SQLException e) {
+
+		} catch (SQLException e) {
 			e.printStackTrace();
-		}finally {
-			if(rs!=null)try {rs.close();}catch(SQLException e) {}
-			if(pstmt!=null)try {pstmt.close();}catch(SQLException e) {}
-			if(conn!=null)try {conn.close();}catch(SQLException e) {}
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException e) {
+				}
+			if (pstmt != null)
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+				}
 		}
 		return result;
-		
+
+	}
+
+	public loginVO selectpass(String id) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = connutil.getConnection();
+			pstmt = conn.prepareStatement("select pass from bloglogin where id=?");
+			pstmt.setString(1, id);
+			rs = pstmt.executeQuery();
+			if (rs.next()) {
+				//존재함
+				loginVO info=new loginVO();
+				info.setPass(rs.getString(1));
+				
+				return info;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException e) {
+				}
+			if (pstmt != null)
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+				}
+		}
+		return null;
+	}
+
+	public int deleteUser(String id, String pass) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		int result = -1;
+		try {
+			loginVO che = selectpass(id);
+			if (che!=null) {
+				if (che.getPass().equals(pass)) {
+					//비번 일치
+					conn = connutil.getConnection();
+					pstmt = conn.prepareStatement("delete from bloglogin where id=?");
+					pstmt.setString(1, id);
+					pstmt.executeUpdate();
+					result = 1;
+				}else{
+					//비번틀림
+					result=0;
+				}
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException e) {
+				}
+			if (pstmt != null)
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+				}
+		}
+		return result;
+
+	}
+
+	public int updateUser(loginVO info,String newpass) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		int result = 0;
+		try {
+			loginVO che=selectpass(info.getId());
+			if (che!=null) {
+				if (che.getPass().equals(info.getPass())) {
+						conn = connutil.getConnection();
+						pstmt = conn.prepareStatement("update bloglogin set pass=? where id=?");
+						pstmt.setString(1, newpass);
+						pstmt.setString(2, info.getId());
+						pstmt.executeUpdate();
+						result = 1;
+					}else {
+						result = 2;
+						// 비번 틀림
+					}
+				} 
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException e) {
+				}
+			if (pstmt != null)
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+				}
+		}
+		return result;
 	}
 
 }

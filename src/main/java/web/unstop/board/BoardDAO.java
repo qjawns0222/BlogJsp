@@ -11,20 +11,10 @@ import web.unstop.util.connutil;
 
 public class BoardDAO {
 	private static BoardDAO instance = null;
-	private Connection conn;
-	private PreparedStatement pstmt;
-	private ResultSet rs;
-	private ArrayList<boardVO> list ;// VO배열
-	private boardVO tmp;// VO변수
-	private int result;// 결과 기준점
 
 	private BoardDAO() {
-		list = new ArrayList<boardVO>();
-		result = -1;
-		tmp=new boardVO();
-	}
 
-	private String sql = null;
+	}
 
 	public static BoardDAO getInstance() { // 싱글톤
 		if (instance == null) {
@@ -37,8 +27,13 @@ public class BoardDAO {
 
 	public List<boardVO> selectBoardAll() {
 		// 전체 검색
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		boardVO tmp = null;
+		ArrayList<boardVO> list = new ArrayList<boardVO>();
 		try {
-			list = new ArrayList<boardVO>();
+
 			conn = connutil.getConnection();
 			String sql = "select * from blogboard order by num desc";
 			pstmt = conn.prepareStatement(sql);
@@ -82,8 +77,12 @@ public class BoardDAO {
 	}
 
 	public int creBoard(boardVO info) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		int result = -1;
 		try {
-			result = -1;//실패
+			result = -1;// 실패
 			conn = connutil.getConnection();
 			String sql = "insert into blogboard values(?,blogboard_seq.nextval,?,?,0)";
 			pstmt = conn.prepareStatement(sql);
@@ -91,7 +90,7 @@ public class BoardDAO {
 			pstmt.setString(2, info.getTitle());
 			pstmt.setString(3, info.getContent());
 			result = pstmt.executeUpdate();
-			result = 1;//성공
+			result = 1;// 성공
 			return result;
 
 		} catch (SQLException e) {

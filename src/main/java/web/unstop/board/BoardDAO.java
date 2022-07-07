@@ -112,5 +112,135 @@ public class BoardDAO {
 		}
 		return result;
 	}
+	public boardVO  selectBoard(int num) {//한개검색
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		boardVO info=new boardVO();
+		try {
+			
+			conn = connutil.getConnection();
+			String sql = "select * from blogboard where num=?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, num);
+		
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				info.setId(rs.getString("id"));
+				info.setTitle(rs.getString("title"));
+				info.setContent(rs.getString("content"));
+				info.setNum(rs.getInt("num"));
+				info.setCount(rs.getInt("count"));
+			}
+			
+
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		} finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+				}
+			}
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+				}
+			}
+		}
+		return info;
+	}
+	
+	public int updateBoard(boardVO info) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		int result=0;//실패
+		
+		
+		try {
+			
+			conn = connutil.getConnection();
+			String sql = "update blogboard set title=?,content=? where num=?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, info.getTitle());
+			pstmt.setString(2, info.getContent());
+			pstmt.setInt(3, info.getNum());
+			result=pstmt.executeUpdate();//성공
+		
+			
+			
+
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		} finally {
+		
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+				}
+			}
+		}
+		return result;
+	}
+	public int deleteBoard(boardVO info) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		int result=0;//실패
+		
+		
+		try {
+			
+			conn = connutil.getConnection();
+			boardVO che=selectBoard(info.getNum());
+			if(che.getNum()==info.getNum()) {
+				String sql = "delete from blogboard where num=?";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, info.getNum());
+				
+				result=pstmt.executeUpdate();//성공
+			
+			}
+		
+			
+			
+
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		} finally {
+		
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+				}
+			}
+		}
+		return result;
+	}
 
 }

@@ -64,6 +64,15 @@ public class loginDAO {
 				//생성성공
 				pstmt = conn.prepareStatement(sql);
 				pstmt.setString(1, info.getId());
+				pstmt.setString(1, "zzz2");
+				pstmt.setString(2, info.getPass());
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, info.getId());
+				pstmt.setString(1, "zzz1");
+				pstmt.setString(2, info.getPass());
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, info.getId());
+				pstmt.setString(1, "zzz3");
 				pstmt.setString(2, info.getPass());
 				pstmt.executeUpdate();
 				result = 1;

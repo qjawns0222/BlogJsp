@@ -48,7 +48,7 @@ list=dao.selectBoardAll();
 	<tr>
 		<td><%=info.getId()%></td>
 		<td><%=info.getNum()%></td>
-		<td><%=info.getTitle()%></td>
+		<td><a href="/BlogJSP/board/detail.jsp?num=<%=info.getNum()%>"><%=info.getTitle()%></a></td>
 		<td><%=info.getContent()%></td>
 		<td><%=info.getCount()%></td>
 	</tr>
